@@ -12,9 +12,9 @@ int main() {
         nSelection=-1;
         scanf("%d",&nSelection);
         switch (nSelection) {
-            case 1://Ìí¼Ó¿¨
-                add();
-                break;
+//            case 1://Ìí¼Ó¿¨
+//                add();
+//                break;
             case 0://ÍË³ö
                 exitApp();
                 break;

@@ -10,22 +10,11 @@ void outputMenu(){
 void add(){
     printf("----------添加卡----------");
     printf("请输入卡号(长度为18):");
-    char cardnumber[19]={0};
-    for(int i=0;i<18;i++){
-        scanf("%c",&cardnumber[i]);
-        if(cardnumber[i]=='\n')
-            break;
-    }
+
     printf("请输入密码:");
-    char password[21]={0};
-    for(int i=0;i<20;i++){
-        scanf("%c",&password[i]);
-        if(password[i]=='\n')
-            break;
-    }
+
     printf("请输入开卡金额(RMB):");
-    int startmoney=0;
-    scanf("%d",&startmoney);
+
     printf("添加卡信息成功！");
 }
 void query(){}
