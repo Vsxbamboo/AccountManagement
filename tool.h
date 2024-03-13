@@ -10,6 +10,6 @@
 
 void timeToString(time_t t,char* pBuf);
 time_t stringToTime(char* pTime);
-void clearnewline();
+void clearthisline();
 
 #endif //ACCOUNTMANAGEMENT_TOOL_H

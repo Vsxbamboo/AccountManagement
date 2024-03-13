@@ -25,7 +25,7 @@ time_t stringToTime(char *pTime){
     return timel;
 }
 
-void clearnewline(){
+void clearthisline(){
     char buf;
     do{
         scanf("%c",&buf);

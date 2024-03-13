@@ -7,15 +7,16 @@
 #include "model.h"
 #include "service/service.h"
 
-void outputMenu();//输出菜单
-void add();//添加卡
-void query();//查询卡
-void exitApp();//退出
-void logon();//登录
-void settle();//下机
-void annul();//注销卡
-void addMoney();//充值
-void refundMoney();//退费
+void menu_outputMenu();//输出菜单
+void menu_add();//添加卡
+void menu_query();//查询卡
+void menu_exitApp();//退出
+void menu_logon();//登录
+void menu_settle();//下机
+void menu_annul();//注销卡
+void menu_addMoney();//充值
+void menu_refundMoney();//退费
+void menu_cardfile();
 
 
 #endif //ACCOUNTMANAGEMENT_MENU_H

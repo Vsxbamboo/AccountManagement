@@ -21,6 +21,11 @@ typedef struct Card
     int		nDel;		//删除标识 0-未删除，1-删除
 }Card;
 
+typedef struct CardList {
+   Card data;
+   struct CardList *next;
+} *CardList;
+
 typedef struct Billing
 {
     char aCardName[18];    // 卡号
