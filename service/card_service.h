@@ -16,9 +16,12 @@ extern int cardlength;
 #define CARD_NULLPOINTER (-1)
 #define CARD_ALREADY_EXISTS (-2)
 
-Status addCard(Card* cardp);//返回添加卡是否成功
-Card* queryCard(char *aName);
-void showCard(Card* cardp);//输出卡的信息
+Status card_add(Card* cardp);//返回添加卡是否成功
+Card* card_query(char *aName);//查询卡
+void card_show(Card* cardp);//输出卡的信息
+int card_exist(Card* cardp);
+
+
 Status saveCardToFile();
 int getCardCountFromFile();
 void updateCardInFile(Card *p,int n);

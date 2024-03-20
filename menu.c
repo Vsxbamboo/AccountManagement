@@ -26,10 +26,8 @@ void menu_add(){
     printf("----------添加卡----------\n");
     printf("请输入卡号(长度1~18):");
     scanf("%s",card.aName);
-    clearthisline();
     printf("请输入密码(长度1~8):");
     scanf("%s",card.aPwd);
-    clearthisline();
     card.nStatus=0;
     card.tStart=time(NULL);
     card.fTotalUse=0;
@@ -38,7 +36,6 @@ void menu_add(){
     card.nUseCount=0;
     printf("请输入开卡金额(RMB):");
     scanf("%f",&card.fBalance);
-    clearthisline();
     card.nDel=0;
     //
     printf("------添加的卡信息如下------\n");
@@ -50,7 +47,6 @@ void menu_query(){
     printf("请输入卡号(长度1~18):");
     char *aName[19];
     scanf("%s",aName);
-    clearthisline();
     Card *cardp=service_query(aName);
     if(cardp==NULL){
         printf("该卡不存在\n");
@@ -106,10 +102,8 @@ void menu_cardfile(){
              * */
             printf("请输入卡号(长度1~18):");
             scanf("%s",card.aName);
-            clearthisline();
             printf("请输入密码(长度1~8):");
             scanf("%s",card.aPwd);
-            clearthisline();
             card.nStatus=0;
             card.tStart=time(NULL);
             card.fTotalUse=0;
@@ -118,7 +112,6 @@ void menu_cardfile(){
             card.nUseCount=0;
             printf("请输入开卡金额(RMB):");
             scanf("%f",&card.fBalance);
-            clearthisline();
             card.nDel=0;
             printf("请输入插入位置:");
             int n;

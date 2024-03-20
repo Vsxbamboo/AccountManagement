@@ -1,20 +1,22 @@
 #include "card_service.h"
 
 
-Status addCard(Card* cardp){
+Status card_add(Card* cardp){
     //判断空指针
     if(cardp==NULL){
         return CARD_NULLPOINTER;
     }
     //判断卡号是否已经存在
-//    in(cardList,cardp);
+    if(card_exist(cardp)==1){
+        return CARD_ALREADY_EXISTS;
+    }
     cards[cardlength]=(*cardp);
 //    showCard(&cards[cardlength]);
     cardlength++;
     return 0;
 }
 
-Card* queryCard(char *aName){
+Card* card_query(char *aName){
     for(int i=0;i<cardlength;i++){
         if(strcmp(cards[i].aName,aName)==0){
             return &cards[i];
@@ -23,7 +25,7 @@ Card* queryCard(char *aName){
     return NULL;
 }
 
-void showCard(Card *cardp){
+void card_show(Card *cardp){
     if(cardp==NULL)
         return;
     printf("卡号:%s\n",cardp->aName);
@@ -35,6 +37,14 @@ void showCard(Card *cardp){
     timeToString(cardp->tLast,pBuf);
     printf("上次使用时间:%s\n",pBuf);
 }
+
+int card_exist(Card* cardp){
+    if(cardp==NULL)
+        return 0;
+    //TODO 在链表中寻找卡是否存在
+    return 0;
+}
+
 
 Status saveCardToFile(){
     for(int i=0;i<cardlength;i++){

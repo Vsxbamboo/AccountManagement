@@ -5,14 +5,19 @@
 #include "service.h"
 
 Status service_add(Card *cardp){
-    return addCard(cardp);
+    return card_add(cardp);
 }
 Card* service_query(char* aName){
-    return queryCard(aName);
+    return card_query(aName);
 }
 void service_show(Card *cardp){
-    showCard(cardp);
+    card_show(cardp);
 }
+
+
+
+
+
 
 Status service_saveCard(){
     saveCardToFile();
@@ -21,7 +26,7 @@ Status service_saveCard(){
 Status service_readCard(){
     readCard();
     for(int i=0;i<cardlength;i++){
-        showCard(&cards[i]);
+        card_show(&cards[i]);
     }
     return 0;
 }

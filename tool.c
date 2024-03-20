@@ -31,3 +31,27 @@ void clearthisline(){
         scanf("%c",&buf);
     }while(buf!='\n');
 }
+
+/*
+ * str类型的模糊查询，要求str以0结尾
+ * 在a中找有没有等于b的子串
+ * 存在返回1，不存在返回0
+ * */
+int fuzzstrcmp(char *a,char *b){
+    int alen=strlen(a);
+    int blen=strlen(b);
+    if(blen>alen){
+        return 0;
+    }else if(alen==blen){
+        return strcmp(a,b)==0;
+    }else{//alen>blen
+        for(int i=0;i<=alen-blen;i++){
+            for(int j=0;j<blen;j++){
+                if(a[i+j]!=b[j]){
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+}
