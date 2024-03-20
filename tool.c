@@ -37,21 +37,32 @@ void clearthisline(){
  * 在a中找有没有等于b的子串
  * 存在返回1，不存在返回0
  * */
-int fuzzstrcmp(char *a,char *b){
-    int alen=strlen(a);
-    int blen=strlen(b);
-    if(blen>alen){
+
+int fuzz_str_beinclude(char *a, char *b){
+    //a="i" b="teii"
+    int alen = strlen(a);
+    int blen = strlen(b);
+    // 如果b比a长，a不可能是b的子串
+    if (alen > blen){
         return 0;
-    }else if(alen==blen){
-        return strcmp(a,b)==0;
-    }else{//alen>blen
-        for(int i=0;i<=alen-blen;i++){
-            for(int j=0;j<blen;j++){
-                if(a[i+j]!=b[j]){
-                    return 0;
+    } else if (alen == blen) {
+        // 如果长度相等，直接比较两个字符串是否完全相同
+        return strcmp(a, b) == 0;
+    } else { // alen < blen
+        for (int i = 0; i <= blen - alen; i++) {
+            int match = 1; // 假设找到匹配
+            for (int j = 0; j < alen; j++) {
+                if (b[i + j] != a[j]) {
+                    match = 0; // 发现不匹配，更新标志变量
+                    break; // 跳出内层循环
                 }
             }
+            if (match) {
+                // 如果在某个位置找到了匹配，返回1
+                return 1;
+            }
         }
-        return 1;
+        // 如果遍历完a中的所有可能的子串后都没有找到与b匹配的，返回0
+        return 0;
     }
 }

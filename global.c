@@ -4,6 +4,8 @@
 #ifndef GLOBAL
 #define GLOBAL
 #include "model.h"
-extern Card *cards;
+
 extern int cardlength;
+extern CardList cardList;
+extern LinkedList list;
 #endif //GLOBAL

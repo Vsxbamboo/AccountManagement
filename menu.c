@@ -45,17 +45,41 @@ void menu_add(){
 void menu_query(){
     printf("----------查询卡----------\n");
     printf("请输入卡号(长度1~18):");
-    char *aName[19];
+    char aName[19];
     scanf("%s",aName);
-    Card *cardp=service_query(aName);
-    if(cardp==NULL){
-        printf("该卡不存在\n");
-    }else{
-        service_show(cardp);
+    printf("请选择查询方式(1.精准查询,2.模糊查询):");
+    char selection[20];
+    scanf("%s",selection);
+    if(strcmp(selection,"1")==0){
+        Card *cardp=service_query(aName);
+        if(cardp==NULL){
+            printf("该卡不存在\n");
+        }else{
+            service_show(cardp);
+        }
+    }else if(strcmp(selection,"2")==0){
+        CardList resultList=service_fuzz_query(aName);
+        if(resultList->next==NULL){
+            printf("该卡不存在\n");
+        }else{
+            while(resultList->next!=NULL){
+                service_show(&resultList->next->data);
+                resultList=resultList->next;
+            }
+        }
+        //释放结果内存
+        CardList clear_pointer;
+        while(resultList->next!=NULL){
+            clear_pointer=resultList;
+            resultList=resultList->next;
+            free(clear_pointer);
+        }
     }
 
 }
-void menu_exitApp(){}
+void menu_exitApp(){
+    service_clear();
+}
 void menu_logon(){}
 void menu_settle(){}
 void menu_annul(){}
@@ -132,4 +156,42 @@ void menu_cardfile(){
             printf("输入选项错误\n");
     }
 
+}
+
+void menu_linklist(){
+    int selection=-1;
+    int num,index;
+    printf("请选择\n");
+    printf("1.初始化链表\n2.插入\n3.删除\n4.查询\n5.释放\n6.展示链表\n");
+    printf("选择:");
+    scanf("%d",&selection);
+    switch (selection) {
+        case 1:
+            ll_init();
+            break;
+        case 2:
+            printf("请输入数字和位置:");
+            scanf("%d %d",&num,&index);
+            ll_insert(num,index);
+            break;
+        case 3:
+            printf("请输入删除的位置:");
+            scanf("%d",&index);
+            ll_del(index);
+            break;
+        case 4:
+            printf("请输入查询的位置:");
+            scanf("%d",&index);
+            ll_get(index,&num);
+            printf("取得%d\n",num);
+            break;
+        case 5:
+            ll_release();
+            break;
+        case 6:
+            ll_show();
+            break;
+        default:
+            printf("无效输入");
+    }
 }

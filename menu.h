@@ -6,6 +6,7 @@
 #include <string.h>
 #include "model.h"
 #include "service/service.h"
+#include "demo/LinkedListDemo.h"
 
 void menu_outputMenu();//输出菜单
 void menu_add();//添加卡
@@ -17,6 +18,7 @@ void menu_annul();//注销卡
 void menu_addMoney();//充值
 void menu_refundMoney();//退费
 void menu_cardfile();
+void menu_linklist();
 
 
 #endif //ACCOUNTMANAGEMENT_MENU_H

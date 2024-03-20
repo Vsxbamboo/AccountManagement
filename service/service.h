@@ -7,6 +7,9 @@
 Status service_add(Card *cardp);
 void service_show(Card *cardp);
 Card* service_query(char* aName);
+CardList service_fuzz_query(char *aName);
+void service_clear();
+
 Status service_saveCard();
 Status service_readCard();
 int service_getCount();

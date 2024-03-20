@@ -21,10 +21,10 @@ typedef struct Card
     int		nDel;		//删除标识 0-未删除，1-删除
 }Card;
 
-typedef struct CardList {
+typedef struct CardNode {
    Card data;
-   struct CardList *next;
-} *CardList;
+   struct CardNode *next;
+} CardNode,*CardList;
 
 typedef struct Billing
 {
@@ -68,6 +68,9 @@ typedef struct MoneyInfo
     float fBalance;      // 余额
 }MoneyInfo;
 
-
+typedef struct LinkedList{
+    int data;
+    struct LinkedList *next;
+} *LinkedList,LinkedListNode;
 
 #endif //ACCOUNTMANAGEMENT_MODEL_H

@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include "menu.h"
 
-//global包含对全局变量的声明
-#include "global.c"
-Card *cards=NULL;
+//全局变量声明
 int cardlength;
-
+CardList cardList;
+LinkedList list;
+//初始化函数，对全局变量进行初始化
 Status init();
 
 int main() {
@@ -22,11 +22,6 @@ int main() {
     printf("\n欢迎进入计费管理系统\n");
     do{
         menu_outputMenu();
-        /*
-         * 先取一个，如果是换行符，回来再取
-         * */
-        char selectbuf;
-
         scanf("%d",&nSelection);
         switch (nSelection) {
             case 1://添加卡
@@ -54,6 +49,9 @@ int main() {
             case 9://临时卡文件操作菜单
                 menu_cardfile();
                 break;
+            case 10:
+                menu_linklist();
+                break;
             case 0://退出
                 menu_exitApp();
                 break;
@@ -68,9 +66,16 @@ int main() {
 }
 
 Status init(){
-    cards=(Card*) malloc(100*sizeof(Card));
-    if(cards==NULL)
-        return -1;
+    //先设置初值
     cardlength=0;
+    cardList=NULL;
+    //分配空间
+    cardList=(CardList)malloc(sizeof(CardNode));
+    //判断分配空间是否成功
+    if(cardList==NULL)
+        return -1;
+    //对头指针指向的内容初始化
+    cardList->next=NULL;
+
     return 0;
 }

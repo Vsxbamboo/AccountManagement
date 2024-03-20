@@ -47,8 +47,16 @@ int readCard()
     {
         if(fread(&temp, sizeof(Card), 1, fp) != 0)
         {
+            /*
             cards[cardlength]=temp;
             cardlength++;
+             */
+            CardList temp_pointer=cardList;
+            while(temp_pointer->next!=NULL){
+                temp_pointer=temp_pointer->next;
+            }
+            temp_pointer->next->data=temp;
+            temp_pointer->next->next=NULL;
         }
     }
     fclose(fp);
