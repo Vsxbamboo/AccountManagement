@@ -135,53 +135,53 @@ void Menu_LinkList(Menu* self){
     LinkedList demolist;
     int selection=-1;
     int* num=NULL;
-    printf("请选择\n");
-    printf("1.初始化链表\n2.插入\n3.删除\n4.查询\n5.释放\n6.展示链表\n");
-    printf("选择:");
-    scanf("%d",&selection);
-    switch (selection) {
-        case 1:
-            demolist=LinkedList_Init();
-            break;
-        case 2:
-            printf("请输入数字:");
-            num=(int*)malloc(sizeof (int));
-            scanf("%d",num);
-            demolist.Add(&demolist,&num);
-            break;
-        case 3:
-            printf("请输入删除的位置:");
-            num=(int*)malloc(sizeof (int));
-            scanf("%d",num);
-            demolist.Delete(&demolist,*num);
-            free(num);
-            num=NULL;
-            break;
-        case 4:
-            printf("请输入查询的位置:");
-            num=(int*)malloc(sizeof (int));
-            scanf("%d",num);
-            demolist.Get(&demolist,*num,(void*)num);
-            printf("取得%d\n",*num);
-            free(num);
-            num=NULL;
-            break;
-        case 5:
-            demolist.Release(&demolist);
-            break;
-        case 6:
-            num=(int*)malloc(sizeof (int));
-            for(int i=0;i<demolist.count;i++){
-                demolist.Get(&demolist,i,(void*)num);
-                printf("%d->",*num);
-            }
-            printf("\n");
-            free(num);
-            num=NULL;
-            break;
-        default:
-            printf("无效输入");
-    }
+    int index;
+    do{
+        printf("-----链表演示菜单-----\n");
+        printf("1.初始化链表\n2.插入\n3.删除\n4.查询\n5.释放\n6.展示链表\n0.退出\n");
+        printf("选择:");
+        scanf("%d",&selection);
+        switch (selection) {
+            case 1:
+                demolist=LinkedList_Init();
+                break;
+            case 2:
+                printf("请输入数字:");
+                num=(int*)malloc(sizeof (int));
+                scanf("%d",num);
+                demolist.Add(&demolist,num);
+                break;
+            case 3:
+                printf("请输入删除的位置:");
+                scanf("%d",&index);
+                demolist.Delete(&demolist,index);
+                break;
+            case 4:
+                printf("请输入查询的位置:");
+                scanf("%d",&index);
+                demolist.Get(&demolist, index, (void **) &num);
+                printf("取得%d\n",*num);
+                num=NULL;
+                break;
+            case 5:
+                demolist.Release(&demolist);
+                break;
+            case 6:
+                for(int i=0;i<demolist.count;i++){
+                    demolist.Get(&demolist, i, (void **) &num);
+                    printf("%d->",*num);
+                }
+                printf("\n");
+                num=NULL;
+                break;
+            case 0:
+                printf("正在退出链表演示菜单...\n");
+                break;
+            default:
+                printf("无效输入");
+        }
+    }while(selection!=0);
+
 }
 
 
