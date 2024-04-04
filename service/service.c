@@ -38,29 +38,3 @@ void Service_Release(Service* self){
     self->card_service.Release(&self->card_service);
 }
 
-//废弃代码
-//Status service_saveCard(){
-//    saveCardToFile();
-//}
-//
-//Status service_readCard(){
-//    readCard();
-//    CardList temp_pointer=cardList->next;
-//    while(temp_pointer!=NULL){
-//        //card_show(&temp_pointer->data);
-//        temp_pointer=temp_pointer->next;
-//    }
-//    return 0;
-//}
-//
-//int service_getCount(){
-//    return getCardCountFromFile();
-//}
-//
-//Status service_updateCard(Card *p,int n){
-//    updateCardInFile(p,n);
-//}
-//
-//int service_ifinFile(char *pName){
-//    return CardisExist(pName);
-//}

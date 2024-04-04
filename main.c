@@ -48,9 +48,9 @@ int main() {
                 break;
             case 8://注销卡
                 break;
-//            case 9://临时卡文件操作菜单
-//                menu.CardFile(&menu);
-//                break;
+            case 9://临时卡文件操作菜单
+                menu.CardFile(&menu);
+                break;
             case 10://链表演示菜单
                 menu.LinkList(&menu);
                 break;

@@ -74,62 +74,77 @@ void Menu_Settle(Menu* self){}
 void Menu_Annul(Menu* self){}
 void Menu_AddMoney(Menu* self){}
 void Menu_RefundMoney(Menu* self){}
-//void Menu_CardFile(Menu* self){
-//    printf("欢迎进入卡文件交互界面\n");
-//    printf("1.保存现有卡信息\n");
-//    printf("2.读取并展示文件中的卡信息\n");
-//    printf("3.获取卡文件中卡信息的数量\n");
-//    printf("4.更新卡文件中一条卡信息\n");
-//    printf("5.根据卡号判断文件中是否存在该卡\n");
-//    printf("请选择功能:");
-//    int selection=0;
-//    scanf("%d",&selection);
-//    switch (selection) {
-//        case 1:
-//            service_saveCard();
-//            break;
-//        case 2:
-//            service_readCard();
-//            break;
-//        case 3:
-//            printf("卡数量为:%d\n",service_getCount());
-//            break;
-//        case 4:
-//            printf("请输入需要更新的卡信息\n");
-//            Card card;
-//            printf("请输入卡号(长度1~18):");
-//            scanf("%s",card.aName);
-//            printf("请输入密码(长度1~8):");
-//            scanf("%s",card.aPwd);
-//            card.nStatus=0;
-//            card.tStart=time(NULL);
-//            card.fTotalUse=0;
-//            card.tLast=card.tStart;
-//            card.tEnd=card.tStart;//暂时用来占位
-//            card.nUseCount=0;
-//            printf("请输入开卡金额(RMB):");
-//            scanf("%f",&card.fBalance);
-//            card.nDel=0;
-//            printf("请输入插入位置:");
-//            int n;
-//            scanf("%d",&n);
-//            service_updateCard(&card,n);
-//            break;
-//        case 5:
-//            printf("请输入对应卡号:");
-//            char aName[19]={0};
-//            scanf("%s",aName);
-//            if(service_ifinFile(aName)==TRUE){
-//                printf("卡号存在\n");
-//            }else{
-//                printf("卡号不存在\n");
-//            }
-//            break;
-//        default:
-//            printf("输入选项错误\n");
-//    }
-//
-//}
+void Menu_CardFile(Menu* self){
+    CardFile demo_card_file=CardFile_Init("C:\\E\\c\\AccountManagement\\card.ams");
+    int selection=-1;
+    do{
+        printf("-----卡文件演示菜单-----\n");
+        printf("1.保存现有卡信息\n");
+        printf("2.读取并展示文件中的卡信息\n");
+        printf("3.获取卡文件中卡信息的数量\n");
+        printf("4.更新卡文件中一条卡信息\n");
+        printf("5.根据卡号判断文件中是否存在该卡\n");
+        printf("0.退出子菜单\n");
+        printf("请选择功能:");
+        scanf("%d",&selection);
+        switch (selection) {
+            case 1:
+                demo_card_file.SaveWithOverwrite(&demo_card_file,self->service.card_service.card_list);
+                break;
+            case 2:
+                self->service.card_service.card_list.Release(&self->service.card_service.card_list);
+                self->service.card_service.card_list=LinkedList_Init();
+                demo_card_file.ReadFileToLinkedList(&demo_card_file,&self->service.card_service.card_list);
+                for(int i=0;i<self->service.card_service.card_list.count;i++){
+                    Card* cp;
+                    self->service.card_service.card_list.Get(&self->service.card_service.card_list, i, (void **) &cp);
+                    self->service.card_service.Show(&self->service.card_service,cp);
+                }
+                break;
+            case 3:
+                printf("卡数量为:%d\n",demo_card_file.GetCardCout(&demo_card_file));
+                break;
+            case 4:
+                printf("请输入需要更新的卡信息\n");
+                Card card;
+                printf("请输入卡号(长度1~18):");
+                scanf("%s",card.aName);
+                printf("请输入密码(长度1~8):");
+                scanf("%s",card.aPwd);
+                printf("请输入开卡金额(RMB):");
+                scanf("%f",&card.fBalance);
+                card.nStatus=0;
+                card.tStart=time(NULL);
+                card.fTotalUse=0;
+                card.tLast=card.tStart;
+                card.tEnd=card.tStart;//暂时用来占位
+                card.nUseCount=0;
+                card.nDel=0;
+
+                printf("请输入插入位置:");
+                int n;
+                scanf("%d",&n);
+                demo_card_file.UpdateCard(&demo_card_file,n,&card);
+                break;
+            case 5:
+                printf("请输入对应卡号:");
+                char aName[19]={0};
+                scanf("%s",aName);
+                if(demo_card_file.Exist(&demo_card_file,aName)==1){
+                    printf("卡号存在\n");
+                }else{
+                    printf("卡号不存在\n");
+                }
+                break;
+            case 0:
+                printf("正在退出卡文件演示菜单...\n");
+                break;
+            default:
+                printf("输入选项错误\n");
+        }
+    }while(selection!=0);
+
+}
 
 void Menu_LinkList(Menu* self){
     LinkedList demolist;
@@ -138,7 +153,7 @@ void Menu_LinkList(Menu* self){
     int index;
     do{
         printf("-----链表演示菜单-----\n");
-        printf("1.初始化链表\n2.插入\n3.删除\n4.查询\n5.释放\n6.展示链表\n0.退出\n");
+        printf("1.初始化链表\n2.插入\n3.删除\n4.查询\n5.释放\n6.展示链表\n0.退出子菜单\n");
         printf("选择:");
         scanf("%d",&selection);
         switch (selection) {
@@ -211,7 +226,7 @@ void Menu_InitFunction(Menu* self){
     self->Annul=Menu_Annul;
     self->AddMoney=Menu_AddMoney;
     self->RefundMoney=Menu_RefundMoney;
-//    self->CardFile=Menu_CardFile;
+    self->CardFile=Menu_CardFile;
     self->LinkList=Menu_LinkList;
     self->Release=Menu_Release;
 }

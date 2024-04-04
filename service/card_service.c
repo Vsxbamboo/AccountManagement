@@ -8,6 +8,7 @@ CardService CardService_Init(){
 }
 void CardService_InitVariable(CardService* self){
     self->card_list=LinkedList_Init();
+    self->card_file=CardFile_Init("C:\\E\\c\\AccountManagement\\card.ams");
 }
 void CardService_InitFunction(CardService* self){
     self->Add=CardService_Add;
@@ -15,6 +16,10 @@ void CardService_InitFunction(CardService* self){
     self->FuzzQuery=CardService_FuzzQuery;
     self->Show=CardService_Show;
     self->Exist=CardService_Exist;
+    self->SaveCardToFile=CardService_SaveCardToFile;
+    self->GetCardCountFromFile=CardService_GetCardCountFromFile;
+    self->UpdateCardInFile=CardService_UpdateCardInFile;
+    self->CardExistInFile=CardService_CardExistInFile;
     self->Release=CardService_Release;
 }
 
@@ -82,6 +87,7 @@ int CardService_Exist(CardService* self,Card* cardp){
 void CardService_Release(CardService* self){
     //Îö¹¹³ÉÔ±
     self->card_list.Release(&self->card_list);
+    self->card_file.Release(&self->card_file);
 }
 
 int CardService_Compare(void* a,void* b){
@@ -110,23 +116,18 @@ int CardService_FuzzCompare(void* a,void *b){
     }
 }
 
-//Status saveCardToFile(){
-//
-//    CardList temp_pointer=cardList->next;
-//    while(temp_pointer!=NULL){
-//        saveCard(&temp_pointer->data,CARDPATH);
-//        temp_pointer=temp_pointer->next;
-//    }
-//    return 0;
-//}
-//
-//int getCardCountFromFile(){
-//    return getCardCount(CARDPATH);
-//}
-//
-//void updateCardInFile(Card *p,int n){
-//    updateCard(p,CARDPATH,n);
-//}
-//int CardisExist(char *pName){
-//    return isExsit(pName,CARDPATH);
-//}
+int CardService_SaveCardToFile(CardService* self){
+    self->card_file.SaveWithOverwrite(&self->card_file,self->card_list);
+    return 0;
+}
+
+int CardService_GetCardCountFromFile(CardService* self){
+    return self->card_file.GetCardCout(&self->card_file);
+}
+
+void CardService_UpdateCardInFile(CardService* self,Card *p,int n){
+    self->card_file.UpdateCard(&self->card_file,n,p);
+}
+int CardService_CardExistInFile(CardService* self,char *pName){
+    return self->card_file.Exist(&self->card_file,pName);
+}

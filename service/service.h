@@ -28,10 +28,5 @@ Card* Service_QueryCard(Service* self,char* aName);
 LinkedList Service_FuzzQueryCard(Service* self,char* aName);
 void Service_Release(Service* self);
 
-Status service_saveCard();
-Status service_readCard();
-int service_getCount();
-Status service_updateCard(Card *p,int n);
-int service_ifinFile(char *pName);
 
 #endif //ACCOUNTMANAGEMENT_SERVICE_H

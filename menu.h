@@ -30,7 +30,7 @@ typedef struct Menu{
     //退费
     void (*RefundMoney)(struct Menu* self);
     //卡文件演示
-//    void (*CardFile)(struct Menu* self);
+    void (*CardFile)(struct Menu* self);
     //链表演示
     void (*LinkList)(struct Menu* self);
     //析构函数
