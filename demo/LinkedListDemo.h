@@ -6,7 +6,6 @@
 #define ACCOUNTMANAGEMENT_LINKEDLISTDEMO_H
 
 #include "../model.h"
-#include "../global.c"
 #include <stdlib.h>
 #include <stdio.h>
 

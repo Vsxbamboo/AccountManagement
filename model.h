@@ -1,9 +1,7 @@
-//
-// Created by vsx on 2024/3/6.
-//
-
 #ifndef ACCOUNTMANAGEMENT_MODEL_H
 #define ACCOUNTMANAGEMENT_MODEL_H
+
+//一些自定义基本数据类型
 
 #include "time.h"
 
@@ -20,11 +18,6 @@ typedef struct Card
     float	fBalance;	//余额
     int		nDel;		//删除标识 0-未删除，1-删除
 }Card;
-
-typedef struct CardNode {
-   Card data;
-   struct CardNode *next;
-} CardNode,*CardList;
 
 typedef struct Billing
 {
@@ -68,9 +61,6 @@ typedef struct MoneyInfo
     float fBalance;      // 余额
 }MoneyInfo;
 
-typedef struct LinkedList{
-    int data;
-    struct LinkedList *next;
-} *LinkedList,LinkedListNode;
+
 
 #endif //ACCOUNTMANAGEMENT_MODEL_H

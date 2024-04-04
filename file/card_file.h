@@ -1,7 +1,3 @@
-//
-// Created by vsx on 2024/3/6.
-//
-
 #ifndef ACCOUNTMANAGEMENT_CARD_FILE_H
 #define ACCOUNTMANAGEMENT_CARD_FILE_H
 
@@ -15,7 +11,6 @@
 #define CARDPATH "C:\\E\\c\\AccountManagement\\card.ams"     // 卡信息保存路径
 
 #include "../model.h"
-#include "../global.c"
 
 int saveCard(const Card *pCard, const char *pPath);
 
