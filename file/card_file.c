@@ -1,13 +1,5 @@
 #include "card_file.h"
 
-
-/*************************************************
-[函数名] saveCard
-[功能]  将卡信息保存到文件中
-[参数]  pCard：需要保存到卡信息中的卡结构体指针
-        pPath：保存卡信息的文件路径
-[返回值] int型，TRUE表示成功，FALSE表示失败
-*************************************************/
 int CardFile_AppendCard(CardFile *self, Card *pCard) {
     // 文件结构体指针
     FILE *fp = NULL;
@@ -25,7 +17,7 @@ int CardFile_AppendCard(CardFile *self, Card *pCard) {
     return 0;
 }
 
-int CardFile_ReadFileToLinkedList(CardFile* self,LinkedList* target_list_pointer) {
+int CardFile_ReadFileToLinkedList(CardFile *self, LinkedList *target_list_pointer) {
     //文件结构体指针
     FILE *fp = NULL;
     //以只读的方式打开文件
@@ -33,21 +25,16 @@ int CardFile_ReadFileToLinkedList(CardFile* self,LinkedList* target_list_pointer
         return -1;
     }
     while (!feof(fp)) {
-        Card* cp=(Card*)malloc(sizeof(Card));
+        Card *cp = (Card *) malloc(sizeof(Card));
         if (fread(cp, sizeof(Card), 1, fp) != 0) {
-            (*target_list_pointer).Add(target_list_pointer,cp);
+            (*target_list_pointer).Add(target_list_pointer, cp);
         }
     }
     fclose(fp);
     return 0;
 }
 
-/*************************************************
-[功能]  更新卡信息文件中的一条卡信息
-[参数]  pCard:更新后的卡内容。   pPath:卡信息文件的路径
-     nIndex:需要更新的卡信息在文件中的序号
-*************************************************/
-int CardFile_UpdateCard(CardFile* self,int index,Card* pCard) {
+int CardFile_UpdateCard(CardFile *self, int index, Card *pCard) {
     FILE *fp = NULL;    // 文件指针
     int nLine = 0;      // 文件卡信息数
     long lPosition = 0; // 文件位置标记
@@ -67,14 +54,7 @@ int CardFile_UpdateCard(CardFile* self,int index,Card* pCard) {
     return 0;
 }
 
-
-/*************************************************
-[函数名] getCardCount
-[功能]  获取卡信息文件中，卡信息数量
-[参数]  pPath：卡信息文件的路径
-[返回值] int:卡信息文件中的卡信息数量
-*************************************************/
-int CardFile_GetCardCout(struct CardFile* self) {
+int CardFile_GetCardCout(struct CardFile *self) {
     FILE *fp = NULL;  // 文件指针
     int nIndex = 0;   // 卡信息数量
     Card *pCard = (Card *) malloc(sizeof(Card));
@@ -87,13 +67,7 @@ int CardFile_GetCardCout(struct CardFile* self) {
     return nIndex;
 }
 
-
-/*************************************************
-[功能]  根据卡号判断卡是否存在
-[参数]  pNum:卡号    pPath:卡信息文件的路径
-[返回值] int: TRUE 表示卡存在，FALSE 表示卡不存在
-*************************************************/
-int CardFile_Exist(struct CardFile* self,char* pNum) {
+int CardFile_Exist(struct CardFile *self, char *pNum) {
     FILE *fp = NULL;  // 文件结构体指针
     char aName[19] = {0};   // 存放读取出的卡号
     if ((fp = fopen(self->filepath, "rb")) == NULL) {
@@ -125,20 +99,20 @@ void CardFile_InitVariable(CardFile *self, char *filepath) {
 }
 
 void CardFile_InitFunction(CardFile *self) {
-    self->SaveWithOverwrite=CardFile_SaveWithOverwrite;
-    self->AppendCard=CardFile_AppendCard;
-    self->ReadFileToLinkedList=CardFile_ReadFileToLinkedList;
-    self->UpdateCard=CardFile_UpdateCard;
-    self->GetCardCout=CardFile_GetCardCout;
-    self->Exist=CardFile_Exist;
-    self->Release=CardFile_Release;
+    self->SaveWithOverwrite = CardFile_SaveWithOverwrite;
+    self->AppendCard = CardFile_AppendCard;
+    self->ReadFileToLinkedList = CardFile_ReadFileToLinkedList;
+    self->UpdateCard = CardFile_UpdateCard;
+    self->GetCardCout = CardFile_GetCardCout;
+    self->Exist = CardFile_Exist;
+    self->Release = CardFile_Release;
 }
 
-void CardFile_Release(CardFile* self){
+void CardFile_Release(CardFile *self) {
 
 }
 
-int CardFile_SaveWithOverwrite(struct CardFile* self,LinkedList card_list){
+int CardFile_SaveWithOverwrite(struct CardFile *self, LinkedList card_list) {
     // 文件结构体指针
     FILE *fp = NULL;
     // 以只写的模式打开文件
@@ -146,8 +120,8 @@ int CardFile_SaveWithOverwrite(struct CardFile* self,LinkedList card_list){
         return -1;
     }
     //写入
-    Card* pCard;
-    for(int i=0;i<card_list.count;i++){
+    Card *pCard;
+    for (int i = 0; i < card_list.count; i++) {
         card_list.Get(&card_list, i, (void **) &pCard);
         fwrite(pCard, sizeof(Card), 1, fp);
     }

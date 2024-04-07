@@ -1,5 +1,3 @@
-#include "model.h"
-#include <malloc.h>
 #include <stdio.h>
 #include "menu.h"
 
@@ -8,22 +6,22 @@ Status init();
 
 int main() {
     //创建菜单
-    Menu menu=Menu_Init();
+    Menu menu = Menu_Init();
     //全局变量初始化
-    if(init()!=0){
+    if (init() != 0) {
         printf("程序初始化错误，即将退出...\n");
         return 0;
     }
     //创建菜单选项
-    int nSelection=-1;
+    int nSelection = -1;
     //启动提示词
     printf("\n欢迎进入计费管理系统\n");
     //进入选项菜单
-    do{
+    do {
         //输出选项
         menu.OutputMenu(&menu);
         //获取用户输入
-        scanf("%d",&nSelection);
+        scanf("%d", &nSelection);
         //根据用户输入执行对应功能
         switch (nSelection) {
             case 1://添加卡
@@ -62,13 +60,13 @@ int main() {
                 break;
         }
         //选项0退出
-    }while(nSelection!=0);
+    } while (nSelection != 0);
     //析构menu
     menu.Release(&menu);
     return 0;
 }
 
-Status init(){
+Status init() {
 
     return 0;
 }
