@@ -28,4 +28,5 @@ add_executable(AccountManagement main.c
         model.h
         enities/linked_list.h
         enities/linked_list.c
+        global.h
 )

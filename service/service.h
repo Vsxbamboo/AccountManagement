@@ -25,6 +25,9 @@ typedef struct Service {
     //登录卡
     int (*LogOnCard)(struct Service* self, Card* card_pointer);
 
+    //下机
+    int (*LogOutCard)(struct Service* self, Card* card_pointer);
+
     //析构函数
     void (*Release)(struct Service *self);
 } Service;
@@ -44,6 +47,8 @@ Card *Service_QueryCard(Service *self, char *aName);
 LinkedList Service_FuzzQueryCard(Service *self, char *aName);
 
 int Service_LogOnCard(struct Service* self, Card* card_pointer);
+
+int Service_LogOutCard(struct Service* self, Card* card_pointer);
 
 void Service_Release(Service *self);
 

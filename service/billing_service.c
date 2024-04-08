@@ -7,10 +7,14 @@ BillingService BillingService_Init(){
 }
 void BillingService_InitVariable(BillingService* self){
     self->billing_list=LinkedList_Init();
-    self->billing_file= BillingFile_Init("C:\\E\\c\\AccountManagement\\billing.ams");
+    self->billing_file= BillingFile_Init(BILLING_PATH);
 }
 void BillingService_InitFunction(BillingService* self){
     self->Add=BillingService_Add;
+    self->AddBilling=BillingService_AddBilling;
+    self->SettleBilling=BillingService_SettleBilling;
+    self->SaveBillingToFile=BillingService_SaveBillingToFile;
+    self->QueryLast=BillingService_QueryLast;
     self->SaveBillingToFile=BillingService_SaveBillingToFile;
     self->Release=BillingService_Release;
 }
@@ -32,6 +36,60 @@ int BillingService_Add(BillingService* self,Billing* billing_pointer){
     return 0;
 }
 
+int BillingService_AddBilling(BillingService* self,Card* card_pointer){
+    //添加消费信息
+    Billing billing;
+    strcpy(billing.aCardName,card_pointer->aName);
+    billing.tStart=card_pointer->tLast;
+    billing.tEnd=billing.tStart;
+    billing.fAmount=0;
+    billing.nStatus=0;
+    billing.nDel=0;
+    self->Add(self,&billing);
+    return 0;
+}
+
+Billing*  BillingService_SettleBilling(BillingService* self,Card* card_pointer){
+    Billing* latest_billing=self->QueryLast(self,card_pointer);
+    if(latest_billing->nStatus==0 && latest_billing->nDel==0){
+        latest_billing->tEnd=time(NULL);
+        latest_billing->fAmount=(float)(( (latest_billing->tEnd-latest_billing->tStart)/UNIT+1 )*CHARGE);
+        if(latest_billing->fAmount<=card_pointer->fBalance){
+            latest_billing->nStatus=1;
+            return latest_billing;
+        }
+    }
+    return NULL;
+}
+
+Billing* BillingService_QueryLast(struct BillingService* self,Card* card_pointer){
+    Billing *bp=(Billing*) malloc(sizeof(Billing));
+    strcpy(bp->aCardName,card_pointer->aName);
+    bp->tStart=card_pointer->tLast;
+    self->billing_list.Compare=BillingService_CompareLast;
+    int index=self->billing_list.Find(&self->billing_list,bp);
+    free(bp);
+    bp=NULL;
+    if(index!=-1){
+        self->billing_list.Get(&self->billing_list,index,(void**)&bp);
+        return bp;
+    }
+    return NULL;
+}
+
 int BillingService_SaveBillingToFile(struct BillingService* self){
     return self->billing_file.SaveWithOverwrite(&self->billing_file,self->billing_list);
+}
+
+int BillingService_CompareLast(void* a,void* b){
+    if(a==NULL || b==NULL){
+        return 0;
+    }
+    Billing* b_a=(Billing*)a;
+    Billing* b_b=(Billing*)b;
+    if(strcmp(b_a->aCardName,b_b->aCardName)==0 && b_a->tStart==b_b->tStart){
+        return 1;
+    }else{
+        return 0;
+    }
 }

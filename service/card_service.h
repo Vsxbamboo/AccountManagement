@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../model.h"
+#include "../global.h"
 #include "../tool.h"
 #include "../file/card_file.h"
 #include "../enities/linked_list.h"
@@ -23,7 +24,7 @@ typedef struct CardService {
     int (*Add)(struct CardService *self, Card *card_pointer);
 
     //查询卡
-    Card *(*Query)(struct CardService *self, char *aName);
+    Card* (*Query)(struct CardService *self, char *aName);
 
     //模糊查询卡
     LinkedList (*FuzzQuery)(struct CardService *self, char *aName);
@@ -52,8 +53,14 @@ typedef struct CardService {
     //验证是否符合上机状态
     int (*CanLogOn)(struct CardService* self, Card* card_pointer);
 
-    //更新卡使用时间
+    //上机
     int (*LogOnCard)(struct CardService* self, char* aName);
+
+    //验证是否符合下机状态
+    int (*CanLogOut)(struct CardService* self, Card* card_pointer);
+
+    //下机
+    int (*LogOutCard)(struct CardService* self, char* aName,Billing* billing_pointer);
 
     //析构函数
     void (*Release)(struct CardService *self);
@@ -73,6 +80,8 @@ int CardService_Exist(CardService *self, Card *cardp);
 int CardService_VerifyCardPwd(CardService *self,Card* card_pointer);
 int CardService_CanLogOn(CardService* self, Card* card_pointer);
 int CardService_LogOnCard(CardService* self, char* aName);
+int CardService_CanLogOut(CardService* self, Card* card_pointer);
+int CardService_LogOutCard(CardService* self, char* aName,Billing* billing_pointer);
 void CardService_Release(CardService *self);
 
 int CardService_SaveCardToFile(CardService *self);

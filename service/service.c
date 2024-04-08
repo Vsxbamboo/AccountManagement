@@ -22,6 +22,7 @@ void Service_InitFunction(Service *self) {
     self->FuzzQueryCard = Service_FuzzQueryCard;
     self->ShowCard = Service_ShowCard;
     self->LogOnCard=Service_LogOnCard;
+    self->LogOutCard=Service_LogOutCard;
     self->Release = Service_Release;
 }
 
@@ -48,16 +49,31 @@ int Service_LogOnCard(struct Service* self, Card* card_pointer){
         if(self->card_service.CanLogOn(&self->card_service,card_pointer)){
             //修改卡信息中的上机时间等
             self->card_service.LogOnCard(&self->card_service, card_pointer->aName);
-            //添加消费信息
-            Billing billing;
-            strcpy(billing.aCardName,card_pointer->aName);
-            billing.tStart=card_pointer->tLast;
-            billing.tEnd=billing.tStart;
-            billing.fAmount=0;
-            billing.nStatus=0;
-            billing.nDel=0;
-            self->billing_service.Add(&self->billing_service,&billing);
+            //更新卡
+            card_pointer=self->card_service.Query(&self->card_service,card_pointer->aName);
+            //添加计费信息
+            self->billing_service.AddBilling(&self->billing_service,card_pointer);
             return 1;
+        }
+
+    }
+    return 0;
+}
+
+int Service_LogOutCard(struct Service* self, Card* card_pointer){
+    //验证卡号和密码是否匹配
+    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
+        //验证是否符合下机状态
+        if(self->card_service.CanLogOut(&self->card_service,card_pointer)){
+            //结算消费信息
+            Billing* result_billing=self->billing_service.SettleBilling(&self->billing_service,card_pointer);
+            if(result_billing!=NULL){
+                //修改卡信息中的余额和上次使用时间等
+                self->card_service.LogOutCard(&self->card_service, card_pointer->aName,result_billing);
+                return 1;
+            }else{
+                return 0;
+            }
         }
 
     }

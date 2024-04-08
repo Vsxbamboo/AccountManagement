@@ -94,7 +94,24 @@ void Menu_LogOn(Menu *self) {
     }
 }
 
-void Menu_Settle(Menu *self) {}
+void Menu_Settle(Menu *self) {
+    //输出菜单项
+    printf("----------下机----------\n");
+    //获取卡号和密码
+    Card temp_card;
+    Menu_InputCardNum(temp_card.aName);
+    Menu_InputCardPwd(temp_card.aPwd);
+    printf("----------下机信息----------\n");
+    //验证卡能否下机
+    if(self->service.LogOutCard(&self->service,&temp_card)==1){
+        printf("卡号\t余额\t上机时间\n");
+        char pBuf[20] = {0};
+        timeToString(temp_card.tLast,pBuf);
+        printf("%s\t%.2f\t%s\n",temp_card.aName,temp_card.fBalance, pBuf);
+    }else{
+        printf("下机失败\n");
+    }
+}
 
 void Menu_Annul(Menu *self) {}
 

@@ -9,7 +9,7 @@ CardService CardService_Init() {
 
 void CardService_InitVariable(CardService *self) {
     self->card_list = LinkedList_Init();
-    self->card_file = CardFile_Init("C:\\E\\c\\AccountManagement\\card.ams");
+    self->card_file = CardFile_Init(CARD_PATH);
     self->card_file.ReadFileToLinkedList(&self->card_file,&self->card_list);
 }
 
@@ -26,6 +26,8 @@ void CardService_InitFunction(CardService *self) {
     self->VerifyCardPwd=CardService_VerifyCardPwd;
     self->CanLogOn=CardService_CanLogOn;
     self->LogOnCard=CardService_LogOnCard;
+    self->CanLogOut=CardService_CanLogOut;
+    self->LogOutCard=CardService_LogOutCard;
     self->Release = CardService_Release;
 }
 
@@ -130,6 +132,31 @@ int CardService_LogOnCard(CardService* self, char* aName){
         cp->nStatus=1;
         cp->tLast=time(NULL);
         cp->nUseCount+=1;
+    }
+    return 0;
+}
+
+int CardService_CanLogOut(CardService* self, Card* card_pointer){
+    if(card_pointer==NULL)
+        return 0;
+    if(card_pointer->nStatus==1 //未上机
+       && card_pointer->nDel==0 //未被删除
+            ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int CardService_LogOutCard(CardService* self, char* aName,Billing* billing_pointer){
+    Card* cp=self->Query(self,aName);
+    if(cp==NULL){
+        return -1;
+    }else{
+        cp->nStatus=0;//状态下机
+        cp->tLast=billing_pointer->tEnd;//更新最后使用时间
+        cp->fTotalUse+=billing_pointer->fAmount;//增加总共使用费用
+        cp->fBalance-=billing_pointer->fAmount;//减少余额
     }
     return 0;
 }

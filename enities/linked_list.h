@@ -3,7 +3,7 @@
 
 //基于引用的类似C++模板的链表
 #include <stdlib.h>
-
+#include "../model.h"
 //链表节点
 typedef struct LinkedList_Node {
     void *data;
