@@ -9,6 +9,9 @@ typedef struct Service {
     //成员变量
     CardService card_service;
     BillingService billing_service;
+    int CARD_VERIFY_ERROR;
+    int CARD_CANNOT_LOGON;
+    int CARD_CANNOT_LOGOUT;
     //成员函数
     //添加卡
     int (*AddCard)(struct Service *self, Card *card_pointer);
@@ -23,10 +26,10 @@ typedef struct Service {
     void (*ShowCard)(struct Service *self, Card *card_pointer);
 
     //登录卡
-    int (*LogOnCard)(struct Service* self, Card* card_pointer);
+    int (*LogOnCard)(struct Service* self, Card* card_pointer, LogonInfo* login_info);
 
     //下机
-    int (*LogOutCard)(struct Service* self, Card* card_pointer);
+    int (*LogOutCard)(struct Service* self, Card* card_pointer, SettleInfo* settle_info);
 
     //析构函数
     void (*Release)(struct Service *self);
@@ -46,9 +49,9 @@ Card *Service_QueryCard(Service *self, char *aName);
 
 LinkedList Service_FuzzQueryCard(Service *self, char *aName);
 
-int Service_LogOnCard(struct Service* self, Card* card_pointer);
+int Service_LogOnCard(struct Service* self, Card* card_pointer, LogonInfo* login_info);
 
-int Service_LogOutCard(struct Service* self, Card* card_pointer);
+int Service_LogOutCard(struct Service* self, Card* card_pointer, SettleInfo* settle_info);
 
 void Service_Release(Service *self);
 

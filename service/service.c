@@ -14,6 +14,9 @@ Service Service_Init() {
 void Service_InitVariable(Service *self) {
     self->card_service = CardService_Init();
     self->billing_service=BillingService_Init();
+    self->CARD_VERIFY_ERROR=-1;
+    self->CARD_CANNOT_LOGON=-2;
+    self->CARD_CANNOT_LOGOUT=-3;
 }
 
 void Service_InitFunction(Service *self) {
@@ -42,7 +45,7 @@ void Service_ShowCard(Service *self, Card *cardp) {
     self->card_service.Show(&self->card_service, cardp);
 }
 
-int Service_LogOnCard(struct Service* self, Card* card_pointer){
+int Service_LogOnCard(struct Service* self, Card* card_pointer,LogonInfo* login_info){
     //验证卡号和密码是否匹配
     if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
         //验证是否符合上机状态
@@ -53,14 +56,24 @@ int Service_LogOnCard(struct Service* self, Card* card_pointer){
             card_pointer=self->card_service.Query(&self->card_service,card_pointer->aName);
             //添加计费信息
             self->billing_service.AddBilling(&self->billing_service,card_pointer);
+            //返回登录信息
+            if(login_info!=NULL){
+                strcpy(login_info->aCardName,card_pointer->aName);
+                login_info->fBalance=card_pointer->fBalance;
+                login_info->tLogon=card_pointer->tLast;
+            }
             return 1;
+        }else{
+            return self->CARD_CANNOT_LOGON;
         }
 
+    }else{
+        return self->CARD_VERIFY_ERROR;
     }
-    return 0;
+
 }
 
-int Service_LogOutCard(struct Service* self, Card* card_pointer){
+int Service_LogOutCard(struct Service* self, Card* card_pointer,SettleInfo* settle_info){
     //验证卡号和密码是否匹配
     if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
         //验证是否符合下机状态
@@ -70,14 +83,26 @@ int Service_LogOutCard(struct Service* self, Card* card_pointer){
             if(result_billing!=NULL){
                 //修改卡信息中的余额和上次使用时间等
                 self->card_service.LogOutCard(&self->card_service, card_pointer->aName,result_billing);
+                //返回登出信息
+                if(settle_info!=NULL){
+                    //填写登出结构体
+                    strcpy(settle_info->aCardName,card_pointer->aName);
+                    settle_info->tStart=result_billing->tStart;
+                    settle_info->tEnd=result_billing->tEnd;
+                    settle_info->fAmount=result_billing->fAmount;
+                    settle_info->fBalance=card_pointer->fBalance-result_billing->fAmount;
+                }
                 return 1;
             }else{
-                return 0;
+                return self->CARD_CANNOT_LOGOUT;
             }
+        }else{
+            return self->CARD_CANNOT_LOGOUT;
         }
 
+    }else{
+        return self->CARD_VERIFY_ERROR;
     }
-    return 0;
 }
 
 void Service_Release(Service *self) {

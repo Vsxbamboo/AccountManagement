@@ -10,10 +10,8 @@ void Menu_OutputMenu(Menu *self) {
 void Menu_Add(Menu *self) {
     Card card;
     printf("----------添加卡----------\n");
-    printf("请输入卡号(长度1~18):");
-    scanf("%s", card.aName);
-    printf("请输入密码(长度1~8):");
-    scanf("%s", card.aPwd);
+    Menu_InputCardNum(card.aName);
+    Menu_InputCardPwd(card.aPwd);
     printf("请输入开卡金额(RMB):");
     scanf("%f", &card.fBalance);
     //其他变量取默认值
@@ -84,13 +82,20 @@ void Menu_LogOn(Menu *self) {
     Menu_InputCardPwd(temp_card.aPwd);
     printf("----------上机信息----------\n");
     //验证卡能否上机
-    if(self->service.LogOnCard(&self->service,&temp_card)==1){
+    LogonInfo logon_info;
+    int rcode = self->service.LogOnCard(&self->service, &temp_card, &logon_info);
+    if(rcode == 1){
         printf("卡号\t余额\t上机时间\n");
         char pBuf[20] = {0};
-        timeToString(temp_card.tLast,pBuf);
-        printf("%s\t%.2f\t%s\n",temp_card.aName,temp_card.fBalance, pBuf);
+        timeToString(logon_info.tLogon, pBuf);
+        printf("%s\t%.2f\t%s\n", logon_info.aCardName, logon_info.fBalance, pBuf);
     }else{
         printf("上机失败\n");
+        if(rcode==self->service.CARD_VERIFY_ERROR){
+            printf("卡号或密码错误\n");
+        }else if(rcode==self->service.CARD_CANNOT_LOGON){
+            printf("该卡无法登录\n");
+        }
     }
 }
 
@@ -103,13 +108,23 @@ void Menu_Settle(Menu *self) {
     Menu_InputCardPwd(temp_card.aPwd);
     printf("----------下机信息----------\n");
     //验证卡能否下机
-    if(self->service.LogOutCard(&self->service,&temp_card)==1){
-        printf("卡号\t余额\t上机时间\n");
-        char pBuf[20] = {0};
-        timeToString(temp_card.tLast,pBuf);
-        printf("%s\t%.2f\t%s\n",temp_card.aName,temp_card.fBalance, pBuf);
+    SettleInfo settle_info;
+    int rcode =self->service.LogOutCard(&self->service,&temp_card,&settle_info);
+
+    if(rcode==1){
+        printf("卡号\t消费\t余额\t上机时间\t下机时间\n");
+        char start_buf[20] = {0};
+        char end_buf[20] = {0};
+        timeToString(settle_info.tStart,start_buf);
+        timeToString(settle_info.tEnd,end_buf);
+        printf("%s\t%.2f\t%.2f\t%s\t%s\n",settle_info.aCardName,settle_info.fAmount,settle_info.fBalance,start_buf,end_buf);
     }else{
         printf("下机失败\n");
+        if(rcode==self->service.CARD_VERIFY_ERROR){
+            printf("卡号或密码错误\n");
+        }else if(rcode==self->service.CARD_CANNOT_LOGOUT){
+            printf("该卡无法下机，可能是卡的余额不足\n");
+        }
     }
 }
 
