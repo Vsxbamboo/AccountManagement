@@ -12,6 +12,8 @@ typedef struct Service {
     int CARD_VERIFY_ERROR;
     int CARD_CANNOT_LOGON;
     int CARD_CANNOT_LOGOUT;
+    int CARD_BLANCE_ADJUST_ERROR;
+    int CARD_CANNOT_FUND;
     //成员函数
     //添加卡
     int (*AddCard)(struct Service *self, Card *card_pointer);
@@ -30,6 +32,12 @@ typedef struct Service {
 
     //下机
     int (*LogOutCard)(struct Service* self, Card* card_pointer, SettleInfo* settle_info);
+
+    //充值卡
+    int (*AddMoney)(struct Service* self,Card* card_pointer, Money* money, MoneyInfo* money_info);
+
+    //退费
+    int (*RefundMoney)(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info);
 
     //析构函数
     void (*Release)(struct Service *self);
@@ -52,6 +60,10 @@ LinkedList Service_FuzzQueryCard(Service *self, char *aName);
 int Service_LogOnCard(struct Service* self, Card* card_pointer, LogonInfo* login_info);
 
 int Service_LogOutCard(struct Service* self, Card* card_pointer, SettleInfo* settle_info);
+
+int Service_AddMoney(struct Service* self,Card* card_pointer, Money* money, MoneyInfo* money_info);
+
+int Service_RefundMoney(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info);
 
 void Service_Release(Service *self);
 

@@ -17,6 +17,8 @@ void Service_InitVariable(Service *self) {
     self->CARD_VERIFY_ERROR=-1;
     self->CARD_CANNOT_LOGON=-2;
     self->CARD_CANNOT_LOGOUT=-3;
+    self->CARD_BLANCE_ADJUST_ERROR=-4;
+    self->CARD_CANNOT_FUND=-5;
 }
 
 void Service_InitFunction(Service *self) {
@@ -26,6 +28,8 @@ void Service_InitFunction(Service *self) {
     self->ShowCard = Service_ShowCard;
     self->LogOnCard=Service_LogOnCard;
     self->LogOutCard=Service_LogOutCard;
+    self->AddMoney=Service_AddMoney;
+    self->RefundMoney=Service_RefundMoney;
     self->Release = Service_Release;
 }
 
@@ -98,6 +102,58 @@ int Service_LogOutCard(struct Service* self, Card* card_pointer,SettleInfo* sett
             }
         }else{
             return self->CARD_CANNOT_LOGOUT;
+        }
+
+    }else{
+        return self->CARD_VERIFY_ERROR;
+    }
+}
+
+int Service_AddMoney(struct Service* self,Card* card_pointer, Money* money, MoneyInfo* money_info){
+    //验证卡号和密码是否匹配
+    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
+        if(self->card_service.CanFund(&self->card_service,card_pointer)){
+            //在card_service中增加余额
+            int rcode=self->card_service.AdjustBalance(&self->card_service,card_pointer,money);
+            if(rcode==0){
+                //填写money_info
+                if(money_info!=NULL) {
+                    strcpy(money_info->aCardName, card_pointer->aName);
+                    money_info->fBalance = card_pointer->fBalance;
+                    money_info->fMoney=money->fMoney;
+                }
+                return 1;
+            }else{
+                return self->CARD_BLANCE_ADJUST_ERROR;
+            }
+        }else{
+            return self->CARD_CANNOT_FUND;
+        }
+
+    }else{
+        return self->CARD_VERIFY_ERROR;
+    }
+}
+
+int Service_RefundMoney(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info){
+    //验证卡号和密码是否匹配
+    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
+        if(self->card_service.CanReFund(&self->card_service,card_pointer)){
+            //在card_service中增加余额
+            int rcode=self->card_service.AdjustBalance(&self->card_service,card_pointer,money);
+            if(rcode==0){
+                //填写money_info
+                if(money_info!=NULL) {
+                    strcpy(money_info->aCardName, card_pointer->aName);
+                    money_info->fBalance = card_pointer->fBalance;
+                    money_info->fMoney=money->fMoney;
+                }
+                return 1;
+            }else{
+                return self->CARD_BLANCE_ADJUST_ERROR;
+            }
+        }else{
+            return self->CARD_CANNOT_FUND;
         }
 
     }else{

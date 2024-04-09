@@ -130,9 +130,79 @@ void Menu_Settle(Menu *self) {
 
 void Menu_Annul(Menu *self) {}
 
-void Menu_AddMoney(Menu *self) {}
+void Menu_AddMoney(Menu *self) {
+    printf("----------充值----------\n");
+    //获取卡号和密码
+    Card temp_card;
+    MoneyInfo money_info;
+    Money money;
+    Menu_InputCardNum(temp_card.aName);
+    Menu_InputCardPwd(temp_card.aPwd);
+    printf("请输入充值金额(RMB):");
+    scanf("%f", &money.fMoney);
+    if(money.fMoney<=0){
+        printf("充值金额无效\n");
+        return;
+    }
+    strcpy(money.aCardName, temp_card.aName);
+    money.tTime = time(NULL);
+    money.nStatus=0;
+    money.nDel=0;
 
-void Menu_RefundMoney(Menu *self) {}
+    printf("----------充值信息----------\n");
+    //验证卡能否充值
+    int rcode = self->service.AddMoney(&self->service, &temp_card, &money,&money_info);
+    if (rcode == 1) {
+        //输出充值信息
+        printf("卡号\t金额\t余额\n");
+        printf("%s\t%.2f\t%.2f\n", money_info.aCardName, money_info.fMoney, money_info.fBalance);
+    } else {
+        printf("充值失败\n");
+        if (rcode == self->service.CARD_VERIFY_ERROR) {
+            printf("卡号或密码错误\n");
+        }else if(rcode==self->service.CARD_BLANCE_ADJUST_ERROR){
+            printf("余额修改失败\n");
+        }else if(rcode==self->service.CARD_CANNOT_FUND){
+            printf("卡状态异常,无法充值\n");
+        }
+    }
+}
+
+void Menu_RefundMoney(Menu *self) {
+    printf("----------退费----------\n");
+    //获取卡号和密码
+    Card temp_card;
+    MoneyInfo money_info;
+    Money money;
+    Menu_InputCardNum(temp_card.aName);
+    Menu_InputCardPwd(temp_card.aPwd);
+    printf("请输入退费金额(RMB):");
+    scanf("%f", &money.fMoney);
+    if(money.fMoney<=0){
+        printf("退费金额无效\n");
+        return;
+    }
+    strcpy(money.aCardName, temp_card.aName);
+    money.tTime = time(NULL);
+    money.nStatus=1;
+    money.nDel=0;
+
+    printf("----------退费信息----------\n");
+    //验证卡能否退费
+    int rcode = self->service.RefundMoney(&self->service, &temp_card, &money,&money_info);
+    if (rcode == 1) {
+        //输出充值信息
+        printf("卡号\t金额\t余额\n");
+        printf("%s\t%.2f\t%.2f\n", money_info.aCardName, money_info.fMoney, money_info.fBalance);
+    } else {
+        printf("退费失败\n");
+        if (rcode == self->service.CARD_VERIFY_ERROR) {
+            printf("卡号或密码错误\n");
+        }else if(rcode==self->service.CARD_BLANCE_ADJUST_ERROR){
+            printf("余额修改失败,请检查余额是否充足\n");
+        }
+    }
+}
 
 void Menu_CardFile(Menu *self) {
     CardFile demo_card_file = CardFile_Init("C:\\E\\c\\AccountManagement\\card.ams");

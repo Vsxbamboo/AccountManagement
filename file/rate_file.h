@@ -1,8 +1,0 @@
-//
-// Created by vsx on 2024/3/6.
-//
-
-#ifndef ACCOUNTMANAGEMENT_RATE_FILE_H
-#define ACCOUNTMANAGEMENT_RATE_FILE_H
-
-#endif //ACCOUNTMANAGEMENT_RATE_FILE_H

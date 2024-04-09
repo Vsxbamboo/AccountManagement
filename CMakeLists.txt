@@ -9,24 +9,18 @@ add_executable(AccountManagement main.c
         service/service.h
         service/card_service.c
         service/card_service.h
-        service/rate_service.c
-        service/rate_service.h
         service/billing_service.c
         service/billing_service.h
-        service/record_service.c
-        service/record_service.h
-        file/rate_file.c
-        file/rate_file.h
         file/card_file.c
         file/card_file.h
         file/billing_file.c
         file/billing_file.h
-        file/record_file.c
-        file/record_file.h
         tool.c
         tool.h
         model.h
         enities/linked_list.h
         enities/linked_list.c
         global.h
+        service/money_service.h
+        service/money_service.c
 )

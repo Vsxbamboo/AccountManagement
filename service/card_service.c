@@ -28,6 +28,9 @@ void CardService_InitFunction(CardService *self) {
     self->LogOnCard=CardService_LogOnCard;
     self->CanLogOut=CardService_CanLogOut;
     self->LogOutCard=CardService_LogOutCard;
+    self->CanFund=CardService_CanFund;
+    self->CanReFund=CardService_CanReFund;
+    self->AdjustBalance=CardService_AdjustBalance;
     self->Release = CardService_Release;
 }
 
@@ -159,6 +162,62 @@ int CardService_LogOutCard(CardService* self, char* aName,Billing* billing_point
         cp->fBalance-=billing_pointer->fAmount;//减少余额
     }
     return 0;
+}
+
+int CardService_CanFund(CardService* self, Card* card_pointer){
+    if(card_pointer==NULL){
+        return 0;
+    }
+    if((card_pointer->nStatus==1 || card_pointer->nStatus==0) //未上机或上机中
+    && card_pointer->nDel==0 //未被删除
+    && card_pointer->tEnd>time(NULL) //未到截止时间
+        ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int CardService_CanReFund(struct CardService* self, Card* card_pointer){
+    if(card_pointer==NULL){
+        return 0;
+    }
+    if((card_pointer->nStatus==1 || card_pointer->nStatus==0) //未上机或上机中
+       && card_pointer->nDel==0 //未被删除
+       && card_pointer->tEnd>time(NULL) //未到截止时间
+            ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int CardService_AdjustBalance(CardService* self, Card* card_pointer, Money* money_pointer){
+    if(card_pointer==NULL || money_pointer==NULL || strcmp(card_pointer->aName,money_pointer->aCardName)!=0){
+        return -1;
+    }
+    if(self->VerifyCardPwd(self,card_pointer)){
+        Card* cp=self->Query(self,card_pointer->aName);
+        if(money_pointer->nStatus==0){
+            if(cp->fBalance+money_pointer->fMoney>=0){
+                cp->fBalance+=money_pointer->fMoney;
+                *card_pointer=*cp;
+            }else{
+                return -1;
+            }
+        }else if(money_pointer->nStatus==1) {
+            if(cp->fBalance-money_pointer->fMoney>=0){
+                cp->fBalance-=money_pointer->fMoney;
+                *card_pointer=*cp;
+            }else{
+                return -1;
+            }
+        }else{
+            return -1;
+        }
+        return 0;
+    }
+    return -1;
 }
 
 void CardService_Release(CardService *self) {
