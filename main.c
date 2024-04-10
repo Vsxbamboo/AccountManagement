@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include "menu.h"
 
+//全局变量
+float UNIT;
+float CHARGE;
+
 //初始化函数，对全局变量进行初始化
 Status init();
+void InputSelection(int* selection);
 
 int main() {
     //创建菜单
@@ -21,7 +26,7 @@ int main() {
         //输出选项
         menu.OutputMenu(&menu);
         //获取用户输入
-        scanf("%d", &nSelection);
+        InputSelection(&nSelection);
         //根据用户输入执行对应功能
         switch (nSelection) {
             case 1://添加卡
@@ -43,6 +48,7 @@ int main() {
                 menu.RefundMoney(&menu);
                 break;
             case 7://查询统计
+                menu.Statistics(&menu);
                 break;
             case 8://注销卡
                 menu.Cancel(&menu);
@@ -68,6 +74,17 @@ int main() {
 }
 
 Status init() {
-
+    UNIT=15;
+    CHARGE=0.5f;
     return 0;
+}
+
+void InputSelection(int* selection){
+    char input[3]={0};
+    scanf("%2s",input);
+    if(strlen(input)==1){
+        *selection=input[0]-'0';
+    }else if(strlen(input)==2){
+        *selection=10*(input[0]-'0')+input[1]-'0';
+    }
 }

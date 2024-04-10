@@ -55,5 +55,9 @@ typedef struct MoneyInfo {
     float fBalance;      // 余额
 } MoneyInfo;
 
+typedef struct ChargeInfo {
+    float unit;
+    float charge;
+} ChargeInfo;
 
 #endif //ACCOUNTMANAGEMENT_MODEL_H

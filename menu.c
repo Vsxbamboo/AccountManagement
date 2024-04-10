@@ -123,7 +123,7 @@ void Menu_Settle(Menu *self) {
         if(rcode==self->service.CARD_VERIFY_ERROR){
             printf("卡号或密码错误\n");
         }else if(rcode==self->service.CARD_CANNOT_LOGOUT){
-            printf("该卡无法下机，可能是卡的余额不足\n");
+            printf("该卡无法下机\n");
         }
     }
 }
@@ -145,7 +145,7 @@ void Menu_Cancel(Menu *self) {
     }else if(rcode==self->service.CARD_VERIFY_ERROR){
         printf("卡号或密码错误\n");
     }else if(rcode==self->service.CARD_CANNOT_CANCEL){
-        printf("卡状态异常，无法注销");
+        printf("卡状态异常，无法注销\n");
     }
 
 }
@@ -296,6 +296,139 @@ void Menu_CardFile(Menu *self) {
 
 }
 
+void Menu_Statistics(Menu *self){
+    printf("----------查询统计----------\n");
+    //单卡时段消费
+    printf("1.单卡时段消费\n");
+    //时段营业额
+    printf("2.时段营业额\n");
+    //12个月营业额
+    printf("3.12个月营业额\n");
+    printf("输入选项编号:");
+    int selection;
+    scanf("%d",&selection);
+    switch(selection){
+        case 1:{
+            Card temp_card;
+            Menu_InputCardNum(temp_card.aName);
+            char start_time_string[20] = {0};
+            char end_time_string[20] = {0};
+            time_t start_time,end_time;
+            printf("请输入开始时间(格式:yyyy-mm-dd hh:mm):");
+
+            clear_stdin_buffer();
+            fgets(start_time_string,20,stdin);
+            printf("请输入结束时间(格式:yyyy-mm-dd hh:mm):");
+            fgets(end_time_string,20,stdin);
+            start_time=stringToTime(start_time_string);
+            end_time=stringToTime(end_time_string);
+
+            //查询
+            LinkedList result_list = self->service.QueryAllByName(&self->service, temp_card.aName, start_time, end_time);
+            printf("----------单卡时段消费----------\n");
+            if(result_list.count!=0){
+                printf("卡号\t消费\t开始时间\t结束时间\n");
+                Billing* billing_ptr=malloc(sizeof(Billing));
+                for(int i=0;i<result_list.count;i++){
+                    result_list.Get(&result_list,i,(void**)&billing_ptr);
+                    if(billing_ptr->nStatus==1){
+                        char start_buf[20] = {0};
+                        char end_buf[20]={0};
+                        timeToString(billing_ptr->tStart,start_buf);
+                        timeToString(billing_ptr->tEnd,end_buf);
+                        printf("%s\t%.2f\t%s\t%s\n",billing_ptr->aCardName,billing_ptr->fAmount,start_buf,end_buf);
+                    }
+                }
+            }else{
+                printf("无结果\n");
+            }
+            break;
+        }
+        case 2:{
+            char start_time_string[20] = {0};
+            char end_time_string[20] = {0};
+            time_t start_time,end_time;
+            printf("请输入开始时间(格式:yyyy-mm-dd hh:mm):");
+
+            clear_stdin_buffer();
+            fgets(start_time_string,20,stdin);
+            printf("请输入结束时间(格式:yyyy-mm-dd hh:mm):");
+            fgets(end_time_string,20,stdin);
+            start_time=stringToTime(start_time_string);
+            end_time=stringToTime(end_time_string);
+
+            //查询
+            LinkedList result_list = self->service.QueryAllByTime(&self->service,start_time, end_time);
+            printf("----------时段营业额----------\n");
+            if(result_list.count!=0){
+                printf("卡号\t消费\t开始时间\t结束时间\n");
+                Billing* billing_ptr=malloc(sizeof(Billing));
+                for(int i=0;i<result_list.count;i++){
+                    result_list.Get(&result_list,i,(void**)&billing_ptr);
+                    if(billing_ptr->nStatus==1){
+                        char start_buf[20] = {0};
+                        char end_buf[20]={0};
+                        timeToString(billing_ptr->tStart,start_buf);
+                        timeToString(billing_ptr->tEnd,end_buf);
+                        printf("%s\t%.2f\t%s\t%s\n",billing_ptr->aCardName,billing_ptr->fAmount,start_buf,end_buf);
+                    }
+                }
+            }else{
+                printf("无结果\n");
+            }
+            break;
+        }
+        case 3: {
+            double monthly_revenue[12] = {0}; // 初始化12个月的营业额数组
+            time_t current_time = time(NULL);
+            struct tm *time_info;
+
+            // 获取当前年份
+            time_info = localtime(&current_time);
+            int current_year = time_info->tm_year + 1900;
+
+            for(int month = 0; month < 12; month++) {
+                // 设置每月的开始时间
+                time_info->tm_year = current_year - 1900;
+                time_info->tm_mon = month;
+                time_info->tm_mday = 1;
+                time_info->tm_hour = 0;
+                time_info->tm_min = 0;
+                time_info->tm_sec = 0;
+                time_t start_time = mktime(time_info);
+
+                // 设置每月的结束时间
+                time_info->tm_mon = month + 1;
+                time_info->tm_mday = 0; // 将天数设为0，mktime会自动调整为上个月的最后一天
+                time_t end_time = mktime(time_info);
+                end_time += 86399; // 加上23小时59分钟59秒，得到月末最后一秒
+
+                // 查询该时段内的所有消费记录
+                LinkedList result_list = self->service.QueryAllByTime(&self->service, start_time, end_time);
+                Billing* billing_ptr = NULL;
+                for(int i = 0; i < result_list.count; i++) {
+                    result_list.Get(&result_list, i, (void**)&billing_ptr);
+                    if(billing_ptr->nStatus == 1) {
+                        // 累加每笔消费的金额到对应月份的营业额
+                        monthly_revenue[month] += billing_ptr->fAmount;
+                    }
+                }
+            }
+
+            // 打印每个月的营业额
+            printf("----------12个月营业额----------\n");
+            for(int month = 0; month < 12; month++) {
+                printf("%d月营业额: %.2f\n", month + 1, monthly_revenue[month]);
+            }
+            break;
+        }
+
+
+
+
+    }
+}
+
 void Menu_LinkList(Menu *self) {
     LinkedList demolist;
     int selection = -1;
@@ -378,6 +511,7 @@ void Menu_InitFunction(Menu *self) {
     self->Cancel = Menu_Cancel;
     self->AddMoney = Menu_AddMoney;
     self->RefundMoney = Menu_RefundMoney;
+    self->Statistics = Menu_Statistics;
     self->CardFile = Menu_CardFile;
     self->LinkList = Menu_LinkList;
     self->Release = Menu_Release;

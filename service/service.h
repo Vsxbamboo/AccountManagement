@@ -17,6 +17,7 @@ typedef struct Service {
     int CARD_BLANCE_ADJUST_ERROR;
     int CARD_CANNOT_FUND;
     int CARD_CANNOT_CANCEL;
+    int NULLPOINTER_ERROR;
     //成员函数
     //添加卡
     int (*AddCard)(struct Service *self, Card *card_pointer);
@@ -45,6 +46,12 @@ typedef struct Service {
     //注销卡
     int (*CancelCard)(struct Service* self, Card* card_pointer,MoneyInfo *money_info);
 
+    //查询卡号和时间段内的消费
+    LinkedList (*QueryAllByName)(struct Service* self, char* name, time_t start_time, time_t end_time);
+
+    //查询时间段内的消费
+    LinkedList (*QueryAllByTime)(struct Service* self, time_t start_time, time_t end_time);
+
     //析构函数
     void (*Release)(struct Service *self);
 } Service;
@@ -72,6 +79,10 @@ int Service_AddMoney(struct Service* self,Card* card_pointer, Money* money, Mone
 int Service_RefundMoney(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info);
 
 int Service_CancelCard(struct Service* self, Card* card_pointer,MoneyInfo *money_info);
+
+LinkedList Service_QueryAllByName(struct Service* self, char* name, time_t start_time, time_t end_time);
+
+LinkedList Service_QueryAllByTime(struct Service* self, time_t start_time, time_t end_time);
 
 void Service_Release(Service *self);
 

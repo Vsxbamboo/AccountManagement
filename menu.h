@@ -39,6 +39,8 @@ typedef struct Menu {
     //退费
     void (*RefundMoney)(struct Menu *self);
 
+    void (*Statistics)(struct Menu *self);
+
     //卡文件演示
     void (*CardFile)(struct Menu *self);
 
@@ -74,6 +76,8 @@ void Menu_Cancel(Menu *self);
 void Menu_AddMoney(Menu *self);
 
 void Menu_RefundMoney(Menu *self);
+
+void Menu_Statistics(Menu *self);
 
 void Menu_CardFile(Menu *self);
 

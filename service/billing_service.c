@@ -15,6 +15,8 @@ void BillingService_InitFunction(BillingService* self){
     self->SettleBilling=BillingService_SettleBilling;
     self->SaveBillingToFile=BillingService_SaveBillingToFile;
     self->QueryLast=BillingService_QueryLast;
+    self->QueryAllByName=BillingService_QueryAllByName;
+    self->QueryAllByTime=BillingService_QueryAllByTime;
     self->SaveBillingToFile=BillingService_SaveBillingToFile;
     self->Release=BillingService_Release;
 }
@@ -53,7 +55,7 @@ Billing*  BillingService_SettleBilling(BillingService* self,Card* card_pointer){
     Billing* latest_billing=self->QueryLast(self,card_pointer);
     if(latest_billing->nStatus==0 && latest_billing->nDel==0){
         latest_billing->tEnd=time(NULL);
-        latest_billing->fAmount=(float)(( (latest_billing->tEnd-latest_billing->tStart)/UNIT+1 )*CHARGE);
+        latest_billing->fAmount=(float)(( (latest_billing->tEnd-latest_billing->tStart)/((int)(UNIT*60))+1 )*CHARGE);
         if(latest_billing->fAmount<=card_pointer->fBalance){
             latest_billing->nStatus=1;
             return latest_billing;
@@ -77,8 +79,57 @@ Billing* BillingService_QueryLast(struct BillingService* self,Card* card_pointer
     return NULL;
 }
 
+LinkedList BillingService_QueryAllByName(BillingService* self, char* aName,time_t start_time,time_t end_time){
+    LinkedList result=LinkedList_Init();
+    Billing* billing_ptr=(Billing*) malloc(sizeof(Billing));
+    strcpy(billing_ptr->aCardName,aName);
+    billing_ptr->tStart=start_time;
+    billing_ptr->tEnd=end_time;
+    self->billing_list.Compare=BillingService_CompareNameAndTime;
+    LinkedList result_list = self->billing_list.FindAll(&self->billing_list, billing_ptr);
+    free(billing_ptr);
+    return result_list;
+}
+
+LinkedList BillingService_QueryAllByTime(struct BillingService* self,time_t start_time,time_t end_time){
+    LinkedList result=LinkedList_Init();
+    Billing* billing_ptr=(Billing*) malloc(sizeof(Billing));
+    billing_ptr->tStart=start_time;
+    billing_ptr->tEnd=end_time;
+    self->billing_list.Compare=BillingService_CompareTimeInclude;
+    LinkedList result_list = self->billing_list.FindAll(&self->billing_list, billing_ptr);
+    free(billing_ptr);
+    return result_list;
+}
+
 int BillingService_SaveBillingToFile(struct BillingService* self){
     return self->billing_file.SaveWithOverwrite(&self->billing_file,self->billing_list);
+}
+
+int BillingService_CompareNameAndTime(void* a,void* b){
+    if(a==NULL || b==NULL){
+        return 0;
+    }
+    Billing* b_a=(Billing*)a;
+    Billing* b_b=(Billing*)b;
+    if(strcmp(b_a->aCardName,b_b->aCardName)==0 && b_a->tStart<=b_b->tStart && b_a->tEnd>=b_b->tEnd){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int BillingService_CompareTimeInclude(void* a,void* b){
+    if(a==NULL || b==NULL){
+        return 0;
+    }
+    Billing* b_a=(Billing*)a;
+    Billing* b_b=(Billing*)b;
+    if(b_a->tStart<=b_b->tStart && b_a->tEnd>=b_b->tEnd){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 int BillingService_CompareLast(void* a,void* b){

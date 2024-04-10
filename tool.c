@@ -25,12 +25,11 @@ time_t stringToTime(char *pTime) {
     return timel;
 }
 
-void clearthisline() {
-    char buf;
-    do {
-        scanf("%c", &buf);
-    } while (buf != '\n');
+void clear_stdin_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {}
 }
+
 
 /*
  * str类型的模糊查询，要求str以0结尾

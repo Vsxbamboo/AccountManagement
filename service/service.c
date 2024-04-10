@@ -23,6 +23,7 @@ void Service_InitVariable(Service *self) {
     self->CARD_BLANCE_ADJUST_ERROR=-4;
     self->CARD_CANNOT_FUND=-5;
     self->CARD_CANNOT_CANCEL=-6;
+    self->NULLPOINTER_ERROR=-7;
 }
 
 void Service_InitFunction(Service *self) {
@@ -35,6 +36,8 @@ void Service_InitFunction(Service *self) {
     self->AddMoney=Service_AddMoney;
     self->RefundMoney=Service_RefundMoney;
     self->CancelCard=Service_CancelCard;
+    self->QueryAllByName=Service_QueryAllByName;
+    self->QueryAllByTime=Service_QueryAllByTime;
     self->Release = Service_Release;
 }
 
@@ -56,11 +59,11 @@ void Service_ShowCard(Service *self, Card *cardp) {
 
 int Service_LogOnCard(struct Service* self, Card* card_pointer,LogonInfo* login_info){
     //验证卡号和密码是否匹配
-    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
+    if(!self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
         return self->CARD_VERIFY_ERROR;
     }
     //验证是否符合上机状态
-    if(self->card_service.CanLogOn(&self->card_service,card_pointer)){
+    if(!self->card_service.CanLogOn(&self->card_service,card_pointer)){
         return self->CARD_CANNOT_LOGON;
     }
     //修改卡信息中的上机时间等
@@ -80,62 +83,58 @@ int Service_LogOnCard(struct Service* self, Card* card_pointer,LogonInfo* login_
 
 int Service_LogOutCard(struct Service* self, Card* card_pointer,SettleInfo* settle_info){
     //验证卡号和密码是否匹配
-    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
-        //验证是否符合下机状态
-        if(self->card_service.CanLogOut(&self->card_service,card_pointer)){
-            //结算消费信息
-            Billing* result_billing=self->billing_service.SettleBilling(&self->billing_service,card_pointer);
-            if(result_billing!=NULL){
-                //修改卡信息中的余额和上次使用时间等
-                self->card_service.LogOutCard(&self->card_service, card_pointer->aName,result_billing);
-                //返回登出信息
-                if(settle_info!=NULL){
-                    //填写登出结构体
-                    strcpy(settle_info->aCardName,card_pointer->aName);
-                    settle_info->tStart=result_billing->tStart;
-                    settle_info->tEnd=result_billing->tEnd;
-                    settle_info->fAmount=result_billing->fAmount;
-                    settle_info->fBalance=card_pointer->fBalance-result_billing->fAmount;
-                }
-                return 1;
-            }else{
-                return self->CARD_CANNOT_LOGOUT;
-            }
-        }else{
-            return self->CARD_CANNOT_LOGOUT;
-        }
-
-    }else{
+    if(!self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
         return self->CARD_VERIFY_ERROR;
     }
+    //验证是否符合下机状态
+    if(!self->card_service.CanLogOut(&self->card_service,card_pointer)){
+        return self->CARD_CANNOT_LOGOUT;
+    }
+    //结算消费信息
+    Billing* result_billing=self->billing_service.SettleBilling(&self->billing_service,card_pointer);
+    if(result_billing!=NULL) {
+        //修改卡信息中的余额和上次使用时间等
+        self->card_service.LogOutCard(&self->card_service, card_pointer->aName, result_billing);
+        //返回登出信息
+        if (settle_info != NULL) {
+            //填写登出结构体
+            strcpy(settle_info->aCardName, card_pointer->aName);
+            settle_info->tStart = result_billing->tStart;
+            settle_info->tEnd = result_billing->tEnd;
+            settle_info->fAmount = result_billing->fAmount;
+            settle_info->fBalance = card_pointer->fBalance - result_billing->fAmount;
+        }
+        return 1;
+    }
+    return self->NULLPOINTER_ERROR;
 }
 
 int Service_AddMoney(struct Service* self,Card* card_pointer, Money* money, MoneyInfo* money_info){
     //验证卡号和密码是否匹配
-    if(self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
-        if(self->card_service.CanFund(&self->card_service,card_pointer)){
-            //在card_service中增加余额
-            int rcode=self->card_service.AdjustBalance(&self->card_service,card_pointer,money);
-            if(rcode==0){
-                //填写money_info
-                if(money_info!=NULL) {
-                    strcpy(money_info->aCardName, card_pointer->aName);
-                    money_info->fBalance = card_pointer->fBalance;
-                    money_info->fMoney=money->fMoney;
-                }
-                //写入money
-                self->money_service.AddMoney(&self->money_service,money);
-                return 1;
-            }else{
-                return self->CARD_BLANCE_ADJUST_ERROR;
-            }
-        }else{
-            return self->CARD_CANNOT_FUND;
-        }
-
-    }else{
+    if(!self->card_service.VerifyCardPwd(&self->card_service,card_pointer)){
         return self->CARD_VERIFY_ERROR;
     }
+    if(!self->card_service.CanFund(&self->card_service,card_pointer)){
+        return self->CARD_CANNOT_FUND;
+    }
+    //在card_service中增加余额
+    int rcode=self->card_service.AdjustBalance(&self->card_service,card_pointer,money);
+    if(rcode==0){
+        //填写money_info
+        if(money_info!=NULL) {
+            strcpy(money_info->aCardName, card_pointer->aName);
+            money_info->fBalance = card_pointer->fBalance;
+            money_info->fMoney=money->fMoney;
+        }
+        //写入money
+        self->money_service.AddMoney(&self->money_service,money);
+                return 1;
+    }else{
+        return self->CARD_BLANCE_ADJUST_ERROR;
+    }
+
+
+
 }
 
 int Service_RefundMoney(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info){
@@ -195,3 +194,10 @@ void Service_Release(Service *self) {
     self->money_service.Release(&self->money_service);
 }
 
+LinkedList Service_QueryAllByName(struct Service* self, char* name, time_t start_time, time_t end_time){
+    return self->billing_service.QueryAllByName(&self->billing_service,name,start_time,end_time);
+}
+
+LinkedList Service_QueryAllByTime(struct Service* self, time_t start_time, time_t end_time){
+    return self->billing_service.QueryAllByTime(&self->billing_service,start_time,end_time);
+}

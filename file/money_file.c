@@ -9,6 +9,8 @@ void MoneyFile_InitVariable(MoneyFile* self,char* filepath){
     self->filepath=filepath;
 }
 void MoneyFile_InitFunction(MoneyFile* self){
+    self->SaveWithOverwrite=MoneyFile_SaveWithOverwrite;
+    self->ReadFileToLinkedList=MoneyFile_ReadFileToLinkedList;
     self->Release=MoneyFile_Release;
 }
 

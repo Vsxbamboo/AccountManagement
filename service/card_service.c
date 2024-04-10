@@ -184,7 +184,7 @@ int CardService_CanReFund(struct CardService* self, Card* card_pointer){
     if(card_pointer==NULL){
         return 0;
     }
-    if((card_pointer->nStatus==1 || card_pointer->nStatus==0) //未上机或上机中
+    if(card_pointer->nStatus==0 //未上机
        && card_pointer->nDel==0 //未被删除
             ){
         return 1;

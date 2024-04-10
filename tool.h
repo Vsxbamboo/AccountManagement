@@ -13,7 +13,8 @@ void timeToString(time_t t, char *pBuf);
 
 time_t stringToTime(char *pTime);
 
-void clearthisline();
+void clear_stdin_buffer();
+
 
 int fuzz_str_beinclude(char *a, char *b);
 
