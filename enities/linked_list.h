@@ -46,7 +46,7 @@ int LinkedList_Find(LinkedList *self, void *data);
 
 struct LinkedList LinkedList_FindAll(struct LinkedList *self, void *data);
 
-//成员变量初始化函
+//成员变量初始化函数
 void LinkedList_InitVariable(LinkedList *self);
 
 //成员函数初始化函数

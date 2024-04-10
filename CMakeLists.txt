@@ -23,4 +23,6 @@ add_executable(AccountManagement main.c
         global.h
         service/money_service.h
         service/money_service.c
+        file/money_file.h
+        file/money_file.c
 )

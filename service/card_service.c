@@ -31,6 +31,8 @@ void CardService_InitFunction(CardService *self) {
     self->CanFund=CardService_CanFund;
     self->CanReFund=CardService_CanReFund;
     self->AdjustBalance=CardService_AdjustBalance;
+    self->CanCancel=CardService_CanCancel;
+    self->CancelCard=CardService_CancelCard;
     self->Release = CardService_Release;
 }
 
@@ -184,7 +186,6 @@ int CardService_CanReFund(struct CardService* self, Card* card_pointer){
     }
     if((card_pointer->nStatus==1 || card_pointer->nStatus==0) //未上机或上机中
        && card_pointer->nDel==0 //未被删除
-       && card_pointer->tEnd>time(NULL) //未到截止时间
             ){
         return 1;
     }else{
@@ -218,6 +219,30 @@ int CardService_AdjustBalance(CardService* self, Card* card_pointer, Money* mone
         return 0;
     }
     return -1;
+}
+
+int CardService_CanCancel(CardService* self, Card* card_pointer){
+    if(card_pointer==NULL){
+        return 0;
+    }
+    if(card_pointer->nStatus==0 //未上机
+    && card_pointer->nDel==0 //未被删除
+    && card_pointer->fBalance>=0 //还有或没有余额
+            ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int CardService_CancelCard(CardService* self, char* aName){
+    Card* cp=self->Query(self,aName);
+    if(cp==NULL) {
+        return -1;
+    }
+    cp->nStatus=2;
+    cp->fBalance=0;
+    return 0;
 }
 
 void CardService_Release(CardService *self) {

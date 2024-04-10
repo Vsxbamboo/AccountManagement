@@ -71,6 +71,12 @@ typedef struct CardService {
     //调整余额
     int (*AdjustBalance)(struct CardService* self, Card* card_pointer, Money* money_pointer);
 
+    //判断是否符合注销条件
+    int (*CanCancel)(struct CardService* self, Card* card_pointer);
+
+    //注销卡
+    int (*CancelCard)(struct CardService* self, char* aName);
+
     //析构函数
     void (*Release)(struct CardService *self);
 } CardService;
@@ -92,8 +98,10 @@ int CardService_LogOnCard(CardService* self, char* aName);
 int CardService_CanLogOut(CardService* self, Card* card_pointer);
 int CardService_LogOutCard(CardService* self, char* aName,Billing* billing_pointer);
 int CardService_CanFund(CardService* self, Card* card_pointer);
-int CardService_CanReFund(struct CardService* self, Card* card_pointer);
+int CardService_CanReFund(CardService* self, Card* card_pointer);
 int CardService_AdjustBalance(CardService* self, Card* card_pointer, Money* money_pointer);
+int CardService_CanCancel(CardService* self, Card* card_pointer);
+int CardService_CancelCard(CardService* self, char* aName);
 void CardService_Release(CardService *self);
 
 int CardService_SaveCardToFile(CardService *self);

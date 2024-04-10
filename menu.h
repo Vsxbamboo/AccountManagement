@@ -31,7 +31,7 @@ typedef struct Menu {
     void (*Settle)(struct Menu *self);
 
     //×¢Ïú¿¨
-    void (*Annul)(struct Menu *self);
+    void (*Cancel)(struct Menu *self);
 
     //³äÖµ
     void (*AddMoney)(struct Menu *self);
@@ -69,7 +69,7 @@ void Menu_LogOn(Menu *self);
 
 void Menu_Settle(Menu *self);
 
-void Menu_Annul(Menu *self);
+void Menu_Cancel(Menu *self);
 
 void Menu_AddMoney(Menu *self);
 

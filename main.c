@@ -45,6 +45,7 @@ int main() {
             case 7://查询统计
                 break;
             case 8://注销卡
+                menu.Cancel(&menu);
                 break;
             case 9://临时卡文件操作菜单
                 menu.CardFile(&menu);

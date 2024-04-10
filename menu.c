@@ -128,7 +128,27 @@ void Menu_Settle(Menu *self) {
     }
 }
 
-void Menu_Annul(Menu *self) {}
+void Menu_Cancel(Menu *self) {
+    printf("----------注销----------\n");
+    Card temp_card;
+    Menu_InputCardNum(temp_card.aName);
+    Menu_InputCardPwd(temp_card.aPwd);
+    printf("----------注销信息----------\n");
+    MoneyInfo money_info;
+    int rcode = self->service.CancelCard(&self->service, &temp_card,&money_info);
+    //根据rcode输出
+    if(rcode==1){
+        printf("注销成功\n");
+        printf("----------退费信息----------\n");
+        printf("卡号\t金额\t余额\n");
+        printf("%s\t%.2f\t%.2f\n", money_info.aCardName, money_info.fMoney, money_info.fBalance);
+    }else if(rcode==self->service.CARD_VERIFY_ERROR){
+        printf("卡号或密码错误\n");
+    }else if(rcode==self->service.CARD_CANNOT_CANCEL){
+        printf("卡状态异常，无法注销");
+    }
+
+}
 
 void Menu_AddMoney(Menu *self) {
     printf("----------充值----------\n");
@@ -355,7 +375,7 @@ void Menu_InitFunction(Menu *self) {
     self->ExitApp = Menu_ExitApp;
     self->LogOn = Menu_LogOn;
     self->Settle = Menu_Settle;
-    self->Annul = Menu_Annul;
+    self->Cancel = Menu_Cancel;
     self->AddMoney = Menu_AddMoney;
     self->RefundMoney = Menu_RefundMoney;
     self->CardFile = Menu_CardFile;

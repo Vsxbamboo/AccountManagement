@@ -4,16 +4,19 @@
 #include "../model.h"
 #include "card_service.h"
 #include "billing_service.h"
+#include "money_service.h"
 
 typedef struct Service {
     //成员变量
     CardService card_service;
     BillingService billing_service;
+    MoneyService money_service;
     int CARD_VERIFY_ERROR;
     int CARD_CANNOT_LOGON;
     int CARD_CANNOT_LOGOUT;
     int CARD_BLANCE_ADJUST_ERROR;
     int CARD_CANNOT_FUND;
+    int CARD_CANNOT_CANCEL;
     //成员函数
     //添加卡
     int (*AddCard)(struct Service *self, Card *card_pointer);
@@ -38,6 +41,9 @@ typedef struct Service {
 
     //退费
     int (*RefundMoney)(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info);
+
+    //注销卡
+    int (*CancelCard)(struct Service* self, Card* card_pointer,MoneyInfo *money_info);
 
     //析构函数
     void (*Release)(struct Service *self);
@@ -64,6 +70,8 @@ int Service_LogOutCard(struct Service* self, Card* card_pointer, SettleInfo* set
 int Service_AddMoney(struct Service* self,Card* card_pointer, Money* money, MoneyInfo* money_info);
 
 int Service_RefundMoney(struct Service* self,Card* card_pointer, Money* money,MoneyInfo *money_info);
+
+int Service_CancelCard(struct Service* self, Card* card_pointer,MoneyInfo *money_info);
 
 void Service_Release(Service *self);
 
